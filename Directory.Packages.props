@@ -4,12 +4,17 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
     <CentralPackageTransitivePinningEnabled>true</CentralPackageTransitivePinningEnabled>
     <FrameworkPackageVersion>8.0.0</FrameworkPackageVersion>
+    <AtomPackageVersion>0.0.41</AtomPackageVersion>
   </PropertyGroup>
 
   <ItemGroup>
     <!-- Microsoft common dependencies -->
     <PackageVersion Include="Microsoft.CodeAnalysis" Version="4.11.0" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
+
+    <!-- Atom Framework -->
+    <PackageVersion Include="Genius.Atom.Infrastructure" Version="$(AtomPackageVersion)" />
+    <PackageVersion Include="Genius.Atom.Infrastructure.TestingUtil" Version="$(AtomPackageVersion)" />
 
     <!-- Automated Testing components -->
     <PackageVersion Include="Microsoft.NET.Test.Sdk" Version="17.11.1" />

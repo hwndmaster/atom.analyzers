@@ -1,8 +1,7 @@
 ﻿using System.Collections.Immutable;
 using Microsoft.CodeAnalysis;
-using Microsoft.CodeAnalysis.CSharp;
-using Microsoft.CodeAnalysis.CSharp.Syntax;
 using Microsoft.CodeAnalysis.Diagnostics;
+using Microsoft.CodeAnalysis.Operations;
 
 namespace Genius.Atom.Analyzers;
 
@@ -15,7 +14,8 @@ public class DangerousMethodAnalyzer : DiagnosticAnalyzer
         "Method '{0}' is marked as dangerous: {1}",
         "Usage",
         DiagnosticSeverity.Warning,
-        isEnabledByDefault: true);
+        isEnabledByDefault: true,
+        "This method is considered dangerous and should be avoided.");
 
     public override ImmutableArray<DiagnosticDescriptor> SupportedDiagnostics => [Rule];
 
@@ -23,25 +23,43 @@ public class DangerousMethodAnalyzer : DiagnosticAnalyzer
     {
         context.ConfigureGeneratedCodeAnalysis(GeneratedCodeAnalysisFlags.None);
         context.EnableConcurrentExecution();
-        context.RegisterSyntaxNodeAction(AnalyzeMethod, SyntaxKind.MethodDeclaration);
+        context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
+        context.RegisterOperationAction(AnalyzePropertyReference, OperationKind.PropertyReference);
+        context.RegisterOperationAction(AnalyzeNew, OperationKind.ObjectCreation);
     }
 
-    private static void AnalyzeMethod(SyntaxNodeAnalysisContext context)
+    private static void AnalyzeInvocation(OperationAnalysisContext context)
     {
-        var methodDeclaration = (MethodDeclarationSyntax)context.Node;
-        var methodSymbol = context.SemanticModel.GetDeclaredSymbol(methodDeclaration);
+        var invocation = (IInvocationOperation)context.Operation;
+        ValidateSymbolForUsingDangerousAttribute(context, invocation.TargetMethod);
+    }
 
-        if (methodSymbol == null)
+    private static void AnalyzePropertyReference(OperationAnalysisContext context)
+    {
+        var propertyReference = (IPropertyReferenceOperation)context.Operation;
+        ValidateSymbolForUsingDangerousAttribute(context, propertyReference.Member);
+    }
+
+    private static void AnalyzeNew(OperationAnalysisContext context)
+    {
+        var objectCreation = (IObjectCreationOperation)context.Operation;
+        ValidateSymbolForUsingDangerousAttribute(context, objectCreation.Constructor);
+    }
+
+    private static void ValidateSymbolForUsingDangerousAttribute(OperationAnalysisContext context, ISymbol? symbol)
+    {
+        if (symbol is null)
             return;
 
-        var dangerousAttribute = methodSymbol.GetAttributes().FirstOrDefault(attr =>
-            attr.AttributeClass.Name == "DangerousAttribute");
+        AttributeData? dangerousAttribute = symbol.GetAttributes()
+            .FirstOrDefault(x => "DangerousAttribute".Equals(x.AttributeClass?.Name));
 
-        if (dangerousAttribute is not null)
-        {
-            var message = (string?)dangerousAttribute.ConstructorArguments.FirstOrDefault().Value;
-            var diagnostic = Diagnostic.Create(Rule, methodDeclaration.Identifier.GetLocation(), methodSymbol.Name, message);
-            context.ReportDiagnostic(diagnostic);
-        }
+        if (dangerousAttribute is null)
+            return;
+
+        var message = (string?)dangerousAttribute.ConstructorArguments.FirstOrDefault().Value;
+        var diagnostic = Diagnostic.Create(Rule, context.Operation.Syntax.GetLocation(), symbol.Name,
+            message);
+        context.ReportDiagnostic(diagnostic);
     }
 }

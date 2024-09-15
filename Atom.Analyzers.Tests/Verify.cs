@@ -22,17 +22,4 @@ public static class Verify
         test.ExpectedDiagnostics.AddRange(expected);
         await test.RunAsync(CancellationToken.None);
     }
-
-    /*public async Task VerifyCodeFixAsync(string source, string fixedSource, params DiagnosticResult[] expected)
-    {
-        var test = new CSharpCodeFixTest<DiagnosticAnalyzer, CodeFixProvider, DefaultVerifier>
-        {
-            TestCode = source,
-            FixedCode = fixedSource,
-            ReferenceAssemblies = ReferenceAssemblies.Net.Net80,
-        };
-
-        test.ExpectedDiagnostics.AddRange(expected);
-        await test.RunAsync(CancellationToken.None);
-    }*/
 }

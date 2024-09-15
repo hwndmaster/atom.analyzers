@@ -22,6 +22,8 @@
     <IsTestProject Condition="$(MSBuildProjectName.EndsWith('.Tests'))">True</IsTestProject>
   </PropertyGroup>
 
+  <Import Project="./Atom.targets"/>
+
   <ItemGroup>
     <Using Include="System" />
     <Using Include="System.Collections.Generic" />

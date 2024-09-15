@@ -6,7 +6,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <ProjectReference Include="../Atom.Analyzer/Atom.Analyzer.csproj" />
+    <ProjectReference Include="../Atom.Analyzers/Atom.Analyzers.csproj" />
   </ItemGroup>
 
 </Project>

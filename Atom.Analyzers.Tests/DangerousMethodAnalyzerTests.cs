@@ -38,11 +38,16 @@ public sealed class DangerousMethodAnalyzerTests
                     public void DangerousMethod()
                     {
                     }
+
+                    public void TriggerMethod()
+                    {
+                        DangerousMethod();
+                    }
                 }
             }";
 
         var expected = new DiagnosticResult(DangerousMethodAnalyzer.Rule)
-            .WithSpan(10, 33, 10, 48)
+            .WithSpan(16, 25, 16, 42)
             .WithArguments("DangerousMethod", "This method is dangerous");
 
         await Verify.VerifyAnalyzerAsync<DangerousMethodAnalyzer>(test, expected);
