@@ -1,0 +1,44 @@
+name: .NET
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build:
+
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v3
+      with:
+        dotnet-version: 8.0.x
+        source-url: https://nuget.pkg.github.com/hwndmaster/index.json
+      env:
+        NUGET_AUTH_TOKEN: ${{secrets.GITHUB_TOKEN}}
+    - name: Restore dependencies
+      run: dotnet restore
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+    - name: Test
+      run: dotnet test --verbosity normal --logger="trx;logfilename=TestResults.trx" #--verbosity normal
+    - name: Reporting
+      uses: dorny/test-reporter@v1
+      if: success() || failure() # run this step even if previous step failed
+      with:
+        name: 'Test results report'
+        reporter: 'dotnet-trx'
+        path: '**/TestResults/TestResults.trx'
+        only-summary: 'true'
+        max-annotations: '10'
+        fail-on-error: 'true'
+        list-suites: 'failed'
+        list-tests: 'failed'
+    - name: Pack Analyzers
+      run: dotnet pack Atom.Analyzers/Atom.Analyzers.csproj --configuration Release
+    - name: Publish packages to GPR
+      run: dotnet nuget push **/*.nupkg --skip-duplicate --api-key ${{ secrets.GITHUB_TOKEN }}

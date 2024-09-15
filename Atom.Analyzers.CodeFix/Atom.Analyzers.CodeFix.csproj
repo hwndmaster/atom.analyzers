@@ -1,0 +1,12 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <!-- Temporarily disable, since the project is yet empty -->
+    <IsPackable>false</IsPackable>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="../Atom.Analyzer/Atom.Analyzer.csproj" />
+  </ItemGroup>
+
+</Project>
