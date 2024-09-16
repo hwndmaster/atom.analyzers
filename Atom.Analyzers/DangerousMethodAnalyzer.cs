@@ -25,7 +25,7 @@ public class DangerousMethodAnalyzer : DiagnosticAnalyzer
         context.EnableConcurrentExecution();
         context.RegisterOperationAction(AnalyzeInvocation, OperationKind.Invocation);
         context.RegisterOperationAction(AnalyzePropertyReference, OperationKind.PropertyReference);
-        context.RegisterOperationAction(AnalyzeNew, OperationKind.ObjectCreation);
+        context.RegisterOperationAction(AnalyzeObjectCreation, OperationKind.ObjectCreation);
     }
 
     private static void AnalyzeInvocation(OperationAnalysisContext context)
@@ -40,7 +40,7 @@ public class DangerousMethodAnalyzer : DiagnosticAnalyzer
         ValidateSymbolForUsingDangerousAttribute(context, propertyReference.Member);
     }
 
-    private static void AnalyzeNew(OperationAnalysisContext context)
+    private static void AnalyzeObjectCreation(OperationAnalysisContext context)
     {
         var objectCreation = (IObjectCreationOperation)context.Operation;
         ValidateSymbolForUsingDangerousAttribute(context, objectCreation.Constructor);
@@ -52,10 +52,14 @@ public class DangerousMethodAnalyzer : DiagnosticAnalyzer
             return;
 
         AttributeData? dangerousAttribute = symbol.GetAttributes()
-            .FirstOrDefault(x => "DangerousAttribute".Equals(x.AttributeClass?.Name));
+            //.FirstOrDefault(x => "DangerousAttribute".Equals(x.AttributeClass?.Name));
+            .FirstOrDefault(x => x.AttributeClass?.Name.Contains("Dangerous") == true);
 
         if (dangerousAttribute is null)
+        {
+            ValidateSymbolForUsingDangerousAttribute(context, symbol.ContainingType);
             return;
+        }
 
         var message = (string?)dangerousAttribute.ConstructorArguments.FirstOrDefault().Value;
         var diagnostic = Diagnostic.Create(Rule, context.Operation.Syntax.GetLocation(), symbol.Name,
