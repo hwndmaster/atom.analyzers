@@ -1,7 +1,7 @@
 <Project>
 
   <PropertyGroup>
-    <Version>0.0.1</Version>
+    <Version>0.0.2-beta01</Version>
     <Product>Atom Analyzer</Product>
     <Authors>Dima Kravtsov</Authors>
     <Description>A series of code analyzers for personal pet projects</Description>
