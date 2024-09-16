@@ -2,12 +2,21 @@
 
   <PropertyGroup>
     <PackageId>$(AssemblyName)</PackageId>
+    <PackageTags>analyzer</PackageTags>
     <EnforceExtendedAnalyzerRules>true</EnforceExtendedAnalyzerRules>
+    <IncludeBuildOutput>false</IncludeBuildOutput>
+    <SuppressDependenciesWhenPacking>true</SuppressDependenciesWhenPacking>
   </PropertyGroup>
 
   <ItemGroup>
     <PackageReference Include="Microsoft.CodeAnalysis" />
+    <PackageReference Include="Microsoft.CodeAnalysis.Analyzers" />
     <PackageReference Include="Microsoft.CodeAnalysis.CSharp" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="tools\*.ps1" Pack="true" CopyToOutputDirectory="Always" PackagePath="" />
+    <None Include="$(OutputPath)\$(AssemblyName).dll" Pack="true" PackagePath="analyzers" Visible="false" />
   </ItemGroup>
 
 </Project>

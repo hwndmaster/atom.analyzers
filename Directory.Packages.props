@@ -10,6 +10,7 @@
   <ItemGroup>
     <!-- Microsoft common dependencies -->
     <PackageVersion Include="Microsoft.CodeAnalysis" Version="4.11.0" />
+    <PackageVersion Include="Microsoft.CodeAnalysis.Analyzers" Version="3.3.4" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp" Version="4.11.0" />
 
     <!-- Atom Framework -->
@@ -21,8 +22,6 @@
     <PackageVersion Include="Microsoft.CodeAnalysis.Analyzer.Testing" Version="1.1.2" />
     <PackageVersion Include="Microsoft.CodeAnalysis.CSharp.Analyzer.Testing" Version="1.1.2" />
     <PackageVersion Include="xunit" Version="2.9.0" />
-    <PackageVersion Include="xunit.analyzers" Version="1.15.0" />
-    <PackageVersion Include="xunit.assert" Version="2.9.0" />
     <PackageVersion Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
 </Project>
